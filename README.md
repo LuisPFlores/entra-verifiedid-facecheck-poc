@@ -7,10 +7,13 @@ This proof-of-concept demonstrates high-assurance employee onboarding by combini
 - **Entra Verified ID** — Issue and verify decentralized identity credentials
 - **Face Check** — Liveness detection + government ID match via partner integration
 - **Entitlement Management (ID Governance)** — Auto-assign access packages upon successful identity verification
+- **Conditional Access with Authentication Context** — Enforce post-verification access controls using authentication context (`c10`) that gates onboarding apps until Verified ID + Face Check is completed
 
 ## Scenario
 
 New employees complete identity verification via a government ID + selfie (Face Check). Upon successful verification, they receive a Verified Employee credential. When they present this credential in the My Access portal, Entitlement Management automatically grants them their onboarding access package (apps, groups, sites).
+
+A **Conditional Access policy with authentication context** enforces that onboarding applications (Microsoft 365, SharePoint, LOB apps) are only accessible after the user has successfully presented their Verified ID with Face Check. Users who have not completed verification are blocked and redirected to the verification flow.
 
 ## Pilot Scope
 
@@ -39,11 +42,28 @@ New employees complete identity verification via a government ID + selfie (Face 
 
 ## Timeline Estimate
 
+## Conditional Access with Authentication Context
+
+This POC uses a **Conditional Access authentication context** to enforce Verified ID as a prerequisite for accessing onboarding resources:
+
+1. **Authentication context `c10`** — "Verified ID Face Check Completed" is created as a step-up requirement
+2. **Custom authentication strength** — Requires phishing-resistant MFA (FIDO2, Windows Hello, or X.509 certificate) as the baseline
+3. **CA Policy: Require Verified ID** — Targets the pilot group and authentication context `c10`; grants access only when the auth context is satisfied
+4. **CA Policy: Block Without Verified ID** — Blocks access to onboarding apps for pilot users who haven't completed the Verified ID + Face Check flow
+5. **Logic App integration** — After successful credential presentation with Face Check, the Logic App sets the authentication context claim, unlocking access
+
+Both policies are deployed in **Report-only** mode first, then switched to **On** after validation.
+
+> **Break-glass accounts are always excluded** from both CA policies to prevent lockout.
+
+## Timeline Estimate
+
 | Phase | Duration |
 |-------|----------|
 | Prerequisites & partner setup | 1–2 days |
 | Verified ID configuration | 1 day |
 | Entitlement Management setup | 1 day |
+| Conditional Access + auth context | 0.5 day |
 | Integration & Face Check policy | 1 day |
 | Testing & validation | 2–3 days |
 | **Total** | **~1 week** |
