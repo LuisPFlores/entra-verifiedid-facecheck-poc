@@ -1,0 +1,26 @@
+# Entra Verified ID + Face Check + Entitlement Management POC
+
+# Ignore sensitive files
+*.pfx
+*.cer
+*.key
+*.env
+.env.*
+secrets/
+
+# PowerShell
+*.ps1xml
+
+# OS
+Thumbs.db
+.DS_Store
+
+# IDE
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+audit-log*.md
